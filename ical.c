@@ -61,8 +61,15 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
             case ICAL_DTSTAMP_PROPERTY:
               janet_table_put(event, janet_cstringv("dtstamp"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_dtstamp(prop))));
               break;
-            case ICAL_DTSTART_PROPERTY:
-              janet_table_put(event, janet_cstringv("dtstart"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_dtstart(prop))));
+            case ICAL_DTSTART_PROPERTY: {
+              param = icalproperty_get_first_parameter(prop, ICAL_TZID_PARAMETER);
+              const char* tzid = icalparameter_get_tzid(param);
+              icaltimetype dtstart = icalproperty_get_dtstart(prop);
+              icaltime_set_timezone(&dtstart, icaltimezone_get_builtin_timezone(tzid));
+              janet_table_put(event,
+                              janet_cstringv("dtstart"),
+                              janet_wrap_integer(icaltime_as_timet_with_zone(dtstart,icaltimezone_get_builtin_timezone(tzid))));
+            }
               break;
             case ICAL_CLASS_PROPERTY:
               janet_table_put(event, janet_cstringv("class"), janet_cstringv(icalproperty_enum_to_string(icalproperty_get_class(prop))));
@@ -114,8 +121,15 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
             case ICAL_RRULE_PROPERTY:
               janet_table_put(event, janet_cstringv("url"), janet_cstringv(icalproperty_as_ical_string(prop)));
               break;
-            case ICAL_DTEND_PROPERTY:
-              janet_table_put(event, janet_cstringv("dtend"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_dtend(prop))));
+            case ICAL_DTEND_PROPERTY: {
+              param = icalproperty_get_first_parameter(prop, ICAL_TZID_PARAMETER);
+              const char* tzid = icalparameter_get_tzid(param);
+              icaltimetype dtend = icalproperty_get_dtend(prop);
+              icaltime_set_timezone(&dtend, icaltimezone_get_builtin_timezone(tzid));
+              janet_table_put(event,
+                              janet_cstringv("dtend"),
+                              janet_wrap_integer(icaltime_as_timet_with_zone(dtend,icaltimezone_get_builtin_timezone(tzid))));
+            }
               break;
             case ICAL_DURATION_PROPERTY:
               struct icaldurationtype dur;
@@ -166,13 +180,6 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
             default:
               
             }
-            for (param = icalproperty_get_first_parameter(prop, ICAL_ANY_PARAMETER);
-                 param != 0;
-                 param = icalproperty_get_next_parameter(prop, ICAL_ANY_PARAMETER))
-              {
-                // printf("%s ", icalparameter_as_ical_string(param));
-              }
-            
           }
         janet_array_push(events, janet_wrap_table(event));
       }

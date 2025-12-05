@@ -7,9 +7,9 @@
                  "class" "PUBLIC"
                  "created" 889448400
                  "description" "Project XYZ Review Meeting"
-                 "dtend" 889695000
+                 "dtend" 889713000
                  "dtstamp" 889485000
-                 "dtstart" 889691400
+                 "dtstart" 889709400
                  "location" "1CP Conference Room 4350"
                  "organizer" "MAILTO:mrbig@host.com"
                  "summary" "XYZ Project Review"
