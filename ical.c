@@ -46,7 +46,20 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
       {
         icalrestriction_check(c);
 
-        JanetTable *event = janet_table(2);
+        JanetTable *event = janet_table(icalcomponent_count_properties(c, ICAL_ANY_PROPERTY));
+
+        // collect multi-valued properties into arrays
+        // see https://libical.github.io/libical/book/UsingLibical.html#43-multi-valued-properties
+        JanetArray *categories = janet_array(icalcomponent_count_properties(c, ICAL_CATEGORIES_PROPERTY));
+        JanetArray *attach = janet_array(icalcomponent_count_properties(c, ICAL_ATTACH_PROPERTY));
+        JanetArray *attendee = janet_array(icalcomponent_count_properties(c, ICAL_ATTENDEE_PROPERTY));
+        JanetArray *comment = janet_array(icalcomponent_count_properties(c, ICAL_COMMENT_PROPERTY));
+        JanetArray *contact = janet_array(icalcomponent_count_properties(c, ICAL_CONTACT_PROPERTY));
+        JanetArray *exdate = janet_array(icalcomponent_count_properties(c, ICAL_EXDATE_PROPERTY));
+        JanetArray *rstatus = janet_array(icalcomponent_count_properties(c, ICAL_REQUESTSTATUS_PROPERTY));
+        JanetArray *related = janet_array(icalcomponent_count_properties(c, ICAL_RELATEDTO_PROPERTY));
+        JanetArray *resources = janet_array(icalcomponent_count_properties(c, ICAL_RESOURCES_PROPERTY));
+        JanetArray *rdate = janet_array(icalcomponent_count_properties(c, ICAL_RDATE_PROPERTY));
         
         icalproperty *prop;
         icalparameter *param;
@@ -131,7 +144,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                               janet_wrap_integer(icaltime_as_timet_with_zone(dtend,icaltimezone_get_builtin_timezone(tzid))));
             }
               break;
-            case ICAL_DURATION_PROPERTY:
+            case ICAL_DURATION_PROPERTY: {
               struct icaldurationtype dur;
               dur = icalproperty_get_duration(prop);
               JanetTable *duration = janet_table(6);
@@ -142,6 +155,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
               janet_table_put(duration, janet_cstringv("seconds"), janet_wrap_number(dur.seconds));
               janet_table_put(duration, janet_cstringv("weeks"), janet_wrap_number(dur.weeks));
               janet_table_put(event, janet_cstringv("duration"), janet_wrap_struct(janet_table_to_struct(duration)));
+            }
               break;
             case ICAL_ATTACH_PROPERTY:
               if (icalattach_get_is_url(icalproperty_get_attach(prop))) {
@@ -154,28 +168,55 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
               janet_table_put(event, janet_cstringv("attendee"), janet_cstringv(icalproperty_get_attendee(prop)));
               break;
             case ICAL_CATEGORIES_PROPERTY:
-              janet_table_put(event, janet_cstringv("categories"),  janet_cstringv(icalproperty_get_categories(prop)));
+              janet_array_push(categories, janet_cstringv(icalproperty_get_categories(prop)));
+              janet_table_put(event, janet_cstringv("categories"),  janet_wrap_array(categories));
               break;
             case ICAL_COMMENT_PROPERTY:
-              janet_table_put(event, janet_cstringv("comment"), janet_cstringv(icalproperty_get_comment(prop)));
+              janet_array_push(comment, janet_cstringv(icalproperty_get_comment(prop)));
+              janet_table_put(event, janet_cstringv("comment"),  janet_wrap_array(comment));
               break;
             case ICAL_CONTACT_PROPERTY:
-              janet_table_put(event, janet_cstringv("contact"),  janet_cstringv(icalproperty_get_contact(prop)));
+              janet_array_push(contact, janet_cstringv(icalproperty_get_contact(prop)));
+              janet_table_put(event, janet_cstringv("contact"),  janet_wrap_array(contact));
               break;
             case ICAL_EXDATE_PROPERTY:
-              janet_table_put(event, janet_cstringv("exdate"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_exdate(prop))));
+              janet_array_push(exdate, janet_wrap_integer(icaltime_as_timet(icalproperty_get_exdate(prop))));
+              janet_table_put(event, janet_cstringv("exdate"),  janet_wrap_array(exdate));
               break;
             case ICAL_REQUESTSTATUS_PROPERTY:
-              janet_table_put(event, janet_cstringv("rstatus"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_dtstamp(prop))));
+              janet_array_push(rstatus, janet_cstringv(icalreqstattype_as_string(icalproperty_get_requeststatus(prop))));
+              janet_table_put(event, janet_cstringv("rstatus"),  janet_wrap_array(rstatus));
               break;
             case ICAL_RELATEDTO_PROPERTY:
-              janet_table_put(event, janet_cstringv("related"), janet_cstringv(icalproperty_get_relatedto(prop)));
+              janet_array_push(related, janet_cstringv(icalproperty_get_relatedto(prop)));
+              janet_table_put(event, janet_cstringv("related"),  janet_wrap_array(related));
               break;
             case ICAL_RESOURCES_PROPERTY:
-              janet_table_put(event, janet_cstringv("resources"), janet_cstringv(icalproperty_get_resources(prop)));
+              janet_array_push(resources, janet_cstringv(icalproperty_get_resources(prop)));
+              janet_table_put(event, janet_cstringv("resources"),  janet_wrap_array(resources));
               break;
-            case ICAL_RDATE_PROPERTY:               
-              janet_table_put(event, janet_cstringv("rdate"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_dtstamp(prop))));
+            case ICAL_RDATE_PROPERTY: {
+              param = icalproperty_get_first_parameter(prop, ICAL_VALUE_PARAMETER);
+              const char* value = icalparameter_get_iana_value(param);
+              struct icaldatetimeperiodtype dtp = icalproperty_get_rdate(prop);
+              if (strcmp(value, "PERIOD") == 0) {
+                JanetTable *period = janet_table(3);
+                JanetTable *duration = janet_table(6);
+                janet_table_put(duration, janet_cstringv("days"), janet_wrap_integer(dtp.period.duration.days));
+                janet_table_put(duration, janet_cstringv("hours"), janet_wrap_integer(dtp.period.duration.hours));
+                janet_table_put(duration, janet_cstringv("is_neg"), janet_wrap_integer(dtp.period.duration.is_neg));
+                janet_table_put(duration, janet_cstringv("minutes"), janet_wrap_number(dtp.period.duration.minutes));
+                janet_table_put(duration, janet_cstringv("seconds"), janet_wrap_number(dtp.period.duration.seconds));
+                janet_table_put(duration, janet_cstringv("weeks"), janet_wrap_number(dtp.period.duration.weeks));
+                janet_table_put(period, janet_cstringv("duration"),janet_wrap_struct(janet_table_to_struct(duration)));
+                janet_table_put(period, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(dtp.period.end)));
+                janet_table_put(period, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(dtp.period.start)));
+                janet_array_push(rdate, janet_wrap_struct(janet_table_to_struct(period)));
+              } else {
+                janet_array_push(rdate, janet_wrap_integer(icaltime_as_timet(dtp.time)));
+              }
+              janet_table_put(event, janet_cstringv("rdate"),  janet_wrap_array(rdate));
+            }
               break;
             default:
               
