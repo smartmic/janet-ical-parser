@@ -266,7 +266,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
 }
 
 static JanetReg cfuns[] = {
-  {"table-from-ics", cfun_table_from_ics, "(table_from_ics <buffer>)\n\nreturns a table from ICS data"},
+  {"table-from-ics", cfun_table_from_ics, "(table-from-ics <buffer>)\n\nreturns a table from ICS data"},
   {NULL, NULL, NULL}
 };
 
