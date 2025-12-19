@@ -18,7 +18,18 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
       // RFC5546 check
       icalrestriction_check(component);
       if (icalcomponent_count_errors(component) != 0) {
-        // TODO: export the ics with inserted error properties to indicate non-compliance
+
+        FILE *fPtr;
+        fPtr = fopen("x-lic-errors.ics", "w");
+
+        if (fPtr == NULL) {
+          janet_panicf("Error opening file to write RFC 5545 validation errors.\n");
+        }
+
+        const char *data = icalcomponent_as_ical_string(component);
+        fputs(data, fPtr);
+        fclose(fPtr);
+
         janet_panicf("Semantic or syntactic error in provided iCalender data\n");
       }
 
