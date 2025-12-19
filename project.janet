@@ -9,9 +9,9 @@
 
 (def cflags (case (os/which)
               :windows @["/Ijpm_tree\\include"]
-              :linux @[""]
+              :linux nil
               #default
-              @[""]))
+              nil))
 
 (declare-native
  :name "ical"
