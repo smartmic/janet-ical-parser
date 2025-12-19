@@ -10,7 +10,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
   // improvement: parse components from memory buffer line by line
   icalcomponent *component = icalparser_parse_string(janet_getbuffer(argv, 0)->data);
 
-  if(!icalerrno || component == NULL) {
+  if(!icalerrno || component != NULL) {
     
     if (component == 0 || icalcomponent_isa(component) != ICAL_VCALENDAR_COMPONENT) {
       janet_panicf("No valid iCalendar component provided\n");
