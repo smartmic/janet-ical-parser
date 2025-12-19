@@ -125,9 +125,16 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                               janet_cstringv("dtend"),
                               janet_wrap_integer(icaltime_as_timet(dtend)));
             }
+            if (icaltime_compare(dtend, dtstart) >= 0) {
             janet_table_put(event,
                             janet_cstringv("duration"),
-                            janet_wrap_integer(icaldurationtype_as_int(icaltime_subtract(dtend, dtstart))));
+                            // workaround with janet values, libical icaltime_substract cannot deal with different time zones:
+                            janet_wrap_integer(janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtend")))
+                                               -
+                                               janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtstart")))));
+            } else {
+              janet_panicf("DTEND is before DTSTART.\n");
+            }
           } else {
             prop = icalcomponent_get_first_property(c, ICAL_DURATION_PROPERTY);
             if (prop == 0) janet_panicf("Event %s: Neither DTEND nor DURATION found.\n",
