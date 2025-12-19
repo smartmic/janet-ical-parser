@@ -7,7 +7,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
   JanetTable *result = janet_table(3);
 
   // we have the whole string in memory
-  // improvement: parse components from memory buffer line by line 
+  // improvement: parse components from memory buffer line by line
   icalcomponent *component = icalparser_parse_string(janet_getbuffer(argv, 0)->data);
 
   if(!icalerrno || component == NULL) {
@@ -35,6 +35,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
             janet_table_put(result, janet_cstringv("version"), janet_cstringv(icalproperty_get_version(prop)));
             break;
           default:
+            ;
           }
         }
 
@@ -286,7 +287,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
               }
                 break;
               default:
-              
+                ;
               }
             }
           janet_array_push(events, janet_wrap_table(event));
