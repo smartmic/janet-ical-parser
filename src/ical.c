@@ -64,15 +64,15 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
           // collect multi-valued properties into arrays
           // see https://libical.github.io/libical/book/UsingLibical.html#43-multi-valued-properties
           JanetArray *categories = janet_array(icalcomponent_count_properties(c, ICAL_CATEGORIES_PROPERTY));
-          JanetArray *attach = janet_array(icalcomponent_count_properties(c, ICAL_ATTACH_PROPERTY));
-          JanetArray *attendee = janet_array(icalcomponent_count_properties(c, ICAL_ATTENDEE_PROPERTY));
-          JanetArray *comment = janet_array(icalcomponent_count_properties(c, ICAL_COMMENT_PROPERTY));
-          JanetArray *contact = janet_array(icalcomponent_count_properties(c, ICAL_CONTACT_PROPERTY));
-          JanetArray *exdate = janet_array(icalcomponent_count_properties(c, ICAL_EXDATE_PROPERTY));
+          JanetArray *attachments = janet_array(icalcomponent_count_properties(c, ICAL_ATTACH_PROPERTY));
+          JanetArray *attendees = janet_array(icalcomponent_count_properties(c, ICAL_ATTENDEE_PROPERTY));
+          JanetArray *comments = janet_array(icalcomponent_count_properties(c, ICAL_COMMENT_PROPERTY));
+          JanetArray *contacts = janet_array(icalcomponent_count_properties(c, ICAL_CONTACT_PROPERTY));
+          JanetArray *exdates = janet_array(icalcomponent_count_properties(c, ICAL_EXDATE_PROPERTY));
           JanetArray *rstatus = janet_array(icalcomponent_count_properties(c, ICAL_REQUESTSTATUS_PROPERTY));
           JanetArray *related = janet_array(icalcomponent_count_properties(c, ICAL_RELATEDTO_PROPERTY));
           JanetArray *resources = janet_array(icalcomponent_count_properties(c, ICAL_RESOURCES_PROPERTY));
-          JanetArray *rdate = janet_array(icalcomponent_count_properties(c, ICAL_RDATE_PROPERTY));
+          JanetArray *rdates = janet_array(icalcomponent_count_properties(c, ICAL_RDATE_PROPERTY));
 
           icalproperty *prop;
           icalparameter *param;
@@ -161,7 +161,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_cstringv("class"), janet_cstringv(icalproperty_enum_to_string(icalproperty_get_class(prop))));
                 break;
               case ICAL_CREATED_PROPERTY:
-                janet_table_put(event, janet_cstringv("created"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_dtstamp(prop))));
+                janet_table_put(event, janet_cstringv("created"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_created(prop))));
                 break;
               case ICAL_DESCRIPTION_PROPERTY:
                 janet_table_put(event, janet_cstringv("description"), janet_cstringv(icalproperty_get_description(prop))); 
@@ -178,9 +178,11 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_cstringv("last-mod"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_lastmodified(prop))));
                 break;
               case ICAL_LOCATION_PROPERTY:
+                // TODO: altrepparam, languageparam
                 janet_table_put(event, janet_cstringv("location"),  janet_cstringv(icalproperty_get_location(prop)));
                 break;
               case ICAL_ORGANIZER_PROPERTY:
+                // TODO: cnparam, dirparam, sentbyparam
                 janet_table_put(event, janet_cstringv("organizer"), janet_cstringv(icalproperty_get_organizer(prop)));
                 break;
               case ICAL_PRIORITY_PROPERTY:
@@ -202,36 +204,43 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_cstringv("url"), janet_cstringv(icalproperty_get_url(prop)));
                 break;
               case ICAL_RECURRENCEID_PROPERTY:
+                // TODO:
                 janet_table_put(event, janet_cstringv("recurid"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_recurrenceid(prop))));
                 break;
               case ICAL_RRULE_PROPERTY:
                 janet_table_put(event, janet_cstringv("url"), janet_cstringv(icalproperty_as_ical_string(prop)));
                 break;
               case ICAL_ATTACH_PROPERTY:
+                // TODO: parameters
                 if (icalattach_get_is_url(icalproperty_get_attach(prop))) {
-                  janet_table_put(event, janet_cstringv("attach"), janet_cstringv(icalattach_get_url(icalproperty_get_attach(prop))));
+                  janet_array_push(attachments, janet_cstringv(icalattach_get_url(icalproperty_get_attach(prop))));
                 } else {
-                  janet_table_put(event, janet_cstringv("attach"), janet_cstringv(icalattach_get_data(icalproperty_get_attach(prop))));
+                  janet_array_push(attachments, janet_cstringv(icalattach_get_data(icalproperty_get_attach(prop))));
                 }
+                janet_table_put(event, janet_cstringv("attachments"), janet_wrap_array(attachments));
                 break;
               case ICAL_ATTENDEE_PROPERTY:
-                janet_table_put(event, janet_cstringv("attendee"), janet_cstringv(icalproperty_get_attendee(prop)));
+                // TODO: parameters
+                janet_array_push(attendees, janet_cstringv(icalproperty_get_attendee(prop)));
+                janet_table_put(event, janet_cstringv("attendees"), janet_wrap_array(attendees));
                 break;
               case ICAL_CATEGORIES_PROPERTY:
                 janet_array_push(categories, janet_cstringv(icalproperty_get_categories(prop)));
                 janet_table_put(event, janet_cstringv("categories"),  janet_wrap_array(categories));
                 break;
               case ICAL_COMMENT_PROPERTY:
-                janet_array_push(comment, janet_cstringv(icalproperty_get_comment(prop)));
-                janet_table_put(event, janet_cstringv("comment"),  janet_wrap_array(comment));
+                janet_array_push(comments, janet_cstringv(icalproperty_get_comment(prop)));
+                janet_table_put(event, janet_cstringv("comments"),  janet_wrap_array(comments));
                 break;
               case ICAL_CONTACT_PROPERTY:
-                janet_array_push(contact, janet_cstringv(icalproperty_get_contact(prop)));
-                janet_table_put(event, janet_cstringv("contact"),  janet_wrap_array(contact));
+                // TODO: altrepparam, languageparam
+                janet_array_push(contacts, janet_cstringv(icalproperty_get_contact(prop)));
+                janet_table_put(event, janet_cstringv("contacts"),  janet_wrap_array(contacts));
                 break;
               case ICAL_EXDATE_PROPERTY:
-                janet_array_push(exdate, janet_wrap_integer(icaltime_as_timet(icalproperty_get_exdate(prop))));
-                janet_table_put(event, janet_cstringv("exdate"),  janet_wrap_array(exdate));
+                // TODO: tzidparam, recurrence set
+                janet_array_push(exdates, janet_wrap_integer(icaltime_as_timet(icalproperty_get_exdate(prop))));
+                janet_table_put(event, janet_cstringv("exdates"),  janet_wrap_array(exdates));
                 break;
               case ICAL_REQUESTSTATUS_PROPERTY:
                 janet_array_push(rstatus, janet_cstringv(icalreqstattype_as_string(icalproperty_get_requeststatus(prop))));
@@ -242,6 +251,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_cstringv("related"),  janet_wrap_array(related));
                 break;
               case ICAL_RESOURCES_PROPERTY:
+                // TODO: altrepparam, languageparam
                 janet_array_push(resources, janet_cstringv(icalproperty_get_resources(prop)));
                 janet_table_put(event, janet_cstringv("resources"),  janet_wrap_array(resources));
                 break;
@@ -275,12 +285,12 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                   } else {
                     janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(dtp.period.end)));
                   }
-                  janet_array_push(rdate, janet_wrap_struct(janet_table_to_struct(revent)));
+                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
 
                 } else if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE-TIME")) {
                   janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(rstart) + duration0));
                   janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(icaltime_as_timet(rstart)));
-                  janet_array_push(rdate, janet_wrap_struct(janet_table_to_struct(revent)));
+                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
 
                 } else if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE")) {
                   icaltimetype lrdate = {
@@ -295,13 +305,13 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                   };
                   janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(lrdate) + duration0));
                   janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(icaltime_as_timet(lrdate)));
-                  janet_array_push(rdate, janet_wrap_struct(janet_table_to_struct(revent)));
+                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
                   
                 } else {
                   janet_panicf("Invalid RDATE parameter.\n"); // Just pro forma, this case is caught by the validator.
                 }
 
-                janet_table_put(event, janet_cstringv("rdate"),  janet_wrap_array(rdate));
+                janet_table_put(event, janet_cstringv("rdates"),  janet_wrap_array(rdates));
               }
                 break;
               default:

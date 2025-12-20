@@ -1,0 +1,66 @@
+BEGIN:VCALENDAR
+PRODID:-//ABC Corporation//NONSGML My Product//EN
+VERSION:2.0
+BEGIN:VEVENT
+UID:19970901T130000Z-123402@example.com
+DTSTAMP:19970901T130000Z
+DTSTART:19970401T163000Z
+DTEND:19970402T010000Z
+SUMMARY:Laurel is in sensitivity awareness class.
+CLASS:PUBLIC
+CATEGORIES:BUSINESS,HUMAN RESOURCES
+TRANSP:TRANSPARENT
+CREATED:19960329T133000Z
+DESCRIPTION:Meeting to provide technical review for "Phoenix"
+  design.\nHappy Face Conference Room. Phoenix design team
+  MUST attend this meeting.\nRSVP to team leader.
+GEO:37.386013;-122.082932
+LOCATION;ALTREP="http://xyzcorp.com/conf-rooms/f123.vcf":
+  Conference Room - F123\, Bldg. 002
+LAST-MODIFIED:19960817T133000Z
+ORGANIZER;CN=John Smith:mailto:jsmith@example.com
+PRIORITY:1
+SEQUENCE:0
+STATUS:TENTATIVE
+URL:http://example.com/pub/calendars/jsmith/mytime.ics
+RECURRENCE-ID;VALUE=DATE:19960401
+ATTACH:CID:jsmith.part3.960817T083000.xyzMail@example.com
+ATTACH;FMTTYPE=application/postscript:ftp://example.com/pub/
+  reports/r-960812.ps
+ATTENDEE;MEMBER="mailto:DEV-GROUP@example.com":
+  mailto:joecool@example.com
+ATTENDEE;DELEGATED-FROM="mailto:immud@example.com":
+  mailto:ildoit@example.com
+COMMENT:The meeting really needs to include both ourselves
+  and the customer. We can't hold this meeting without them.
+  As a matter of fact\, the venue for the meeting ought to be at
+  their site. - - John
+COMMENT:fyi
+CONTACT:Jim Dolittle\, ABC Industries\, +1-919-555-1234
+CONTACT;ALTREP="ldap://example.com:6666/o=ABC%20Industries\,
+  c=US???(cn=Jim%20Dolittle)":Jim Dolittle\, ABC Industries\,
+  +1-919-555-1234
+CONTACT;ALTREP="CID:part3.msg970930T083000SILVER@example.com":
+  Jim Dolittle\, ABC Industries\, +1-919-555-1234
+EXDATE:19960402T010000Z,19960403T010000Z,19960404T010000Z
+REQUEST-STATUS:2.0;Success
+REQUEST-STATUS:3.1;Invalid property value;DTSTART:96-Apr-01
+REQUEST-STATUS:2.8; Success\, repeating event ignored. Scheduled
+  as a single event.;RRULE:FREQ=WEEKLY\;INTERVAL=2
+REQUEST-STATUS:4.1;Event conflict.  Date-time is busy.
+REQUEST-STATUS:3.7;Invalid calendar user;ATTENDEE:
+  mailto:jsmith@example.com
+RELATED-TO:jsmith.part7.19960817T083000.xyzMail@example.com
+RELATED-TO:19960401-080045-4000F192713-0052@example.com
+RESOURCES:EASEL,PROJECTOR,VCR
+RESOURCES;LANGUAGE=fr:Nettoyeur haute pression
+END:VEVENT
+BEGIN:VEVENT
+UID:20070423T123432Z-541111@example.com
+DTSTAMP:20070423T123432Z
+DTSTART;VALUE=DATE:20070628
+DTEND;VALUE=DATE:20070709
+SUMMARY:Festival International de Jazz de Montreal
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

@@ -3,7 +3,7 @@
 (use ../helpers)
 
 (test (ical/table-from-ics (read-from-file "test/ics-files/libical-example.ics"))
-  @{"events" @[@{"attendee" "MAILTO:employee-A@host.com"
+  @{"events" @[@{"attendees" @["MAILTO:employee-A@host.com"]
                  "categories" @["MEETING"]
                  "class" "PUBLIC"
                  "created" 889448400
