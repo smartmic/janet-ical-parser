@@ -1,5 +1,7 @@
 (declare-project
- :name "ical")
+ :name "ical"
+ :description "Convert iCalendar (.ics) to Janet"
+ :author "Martin Michel <martin@famic.de>")
 
 (def ldflags (case (os/which)
               :windows @["ical.lib"]
@@ -15,6 +17,6 @@
 
 (declare-native
  :name "ical"
- :source ["ical.c"]
+ :source ["src/ical.c"]
  :cflags cflags
  :ldflags ldflags)
