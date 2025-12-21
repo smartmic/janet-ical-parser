@@ -10,13 +10,16 @@
               @["-lical"]))
 
 (def cflags (case (os/which)
-              :windows @["/Ijpm_tree\\include"]
-              :linux nil
+              :windows @["/Ijpm_tree\\include"
+                         "/Isrc"]
+              :linux @["-I./src"]
               #default
               nil))
 
 (declare-native
  :name "ical"
- :source ["src/ical.c"]
+ :headers ["src/jip.h"]
+ :source ["src/ical.c"
+          "src/utils.c"]
  :cflags cflags
  :ldflags ldflags)

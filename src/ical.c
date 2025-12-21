@@ -1,5 +1,4 @@
-#include <janet.h>
-#include <libical/ical.h>
+#include <jip.h>
 
 static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
   janet_fixarity(argc, 1);
@@ -89,19 +88,9 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
           icaltimetype dtstart;
           if (prop != 0) {
             dtstart = icalproperty_get_dtstart(prop);
-            param = icalproperty_get_first_parameter(prop, ICAL_TZID_PARAMETER);
-            if (param != 0) {
-              const char* tzid = icalparameter_get_tzid(param);
-              icaltime_set_timezone(&dtstart, icaltimezone_get_builtin_timezone(tzid));
-              janet_table_put(event,
-                              janet_cstringv("dtstart"),
-                              janet_wrap_integer(icaltime_as_timet_with_zone(dtstart,
-                                                                             icaltimezone_get_builtin_timezone(tzid))));
-            } else {
-              janet_table_put(event,
-                              janet_cstringv("dtstart"),
-                              janet_wrap_integer(icaltime_as_timet(dtstart)));
-            }
+            janet_table_put(event,
+                            janet_cstringv("dtstart"),
+                            janet_wrap_integer(jip_datetime_with_tzid(dtstart, prop)));
           } else {
             janet_panicf("Event %s: DTSTART missing.\n",
                          janet_unwrap_string(janet_table_get(event, janet_cstringv("uid"))));
@@ -112,26 +101,16 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
           icaltimetype dtend;
           if (prop != 0) {
             dtend = icalproperty_get_dtend(prop);
-            param = icalproperty_get_first_parameter(prop, ICAL_TZID_PARAMETER);
-            if (param != 0) {
-              const char* tzid = icalparameter_get_tzid(param);
-              icaltime_set_timezone(&dtend, icaltimezone_get_builtin_timezone(tzid));
-              janet_table_put(event,
-                              janet_cstringv("dtend"),
-                              janet_wrap_integer(icaltime_as_timet_with_zone(dtend,
-                                                                             icaltimezone_get_builtin_timezone(tzid))));
-            } else {
-              janet_table_put(event,
-                              janet_cstringv("dtend"),
-                              janet_wrap_integer(icaltime_as_timet(dtend)));
-            }
-            if (icaltime_compare(dtend, dtstart) >= 0) {
             janet_table_put(event,
-                            janet_cstringv("duration"),
-                            // workaround with janet values, libical icaltime_substract cannot deal with different time zones:
-                            janet_wrap_integer(janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtend")))
-                                               -
-                                               janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtstart")))));
+                            janet_cstringv("dtend"),
+                            janet_wrap_integer(jip_datetime_with_tzid(dtend, prop)));
+            if (icaltime_compare(dtend, dtstart) >= 0) {
+              janet_table_put(event,
+                              janet_cstringv("duration"),
+                              // workaround with janet values, libical icaltime_substract cannot deal with different time zones:
+                              janet_wrap_integer(janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtend")))
+                                                 -
+                                                 janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtstart")))));
             } else {
               janet_panicf("DTEND is before DTSTART.\n");
             }
