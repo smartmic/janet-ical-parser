@@ -217,8 +217,8 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_cstringv("contacts"),  janet_wrap_array(contacts));
                 break;
               case ICAL_EXDATE_PROPERTY:
-                // TODO: tzidparam, recurrence set
-                janet_array_push(exdates, janet_wrap_integer(icaltime_as_timet(icalproperty_get_exdate(prop))));
+                // TODO: recurrence set
+                janet_array_push(exdates, janet_wrap_integer(jip_datetime_with_tzid(icalproperty_get_exdate(prop), prop)));
                 janet_table_put(event, janet_cstringv("exdates"),  janet_wrap_array(exdates));
                 break;
               case ICAL_REQUESTSTATUS_PROPERTY:

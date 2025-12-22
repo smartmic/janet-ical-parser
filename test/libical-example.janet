@@ -17,4 +17,4 @@
                  "summary" "XYZ Project Review"
                  "uid" "guid-1.host1.com"}]
     "prodid" "-//hacksw/handcal//NONSGML v1.0//EN"
-    "version" "1.0"})
+    "version" "2.0"})
