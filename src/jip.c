@@ -256,38 +256,46 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 }
 
                 // Distinguish 3 cases: PERIOD, DATE-TIME, DATE
-                if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "PERIOD")) {
-                  janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(icaltime_as_timet(dtp.period.start)));
-                  if (0 == icaltime_as_timet(dtp.period.end)) {
-                    janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(icaltime_add(dtp.period.start,
-                                                                                                                     dtp.period.duration))));                    
-                  } else {
-                    janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(dtp.period.end)));
+                if (param != 0) {
+                  if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "PERIOD")) {
+                    janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(jip_datetime_with_tzid(dtp.period.start, prop)));
+                    if (0 == icaltime_as_timet(dtp.period.end)) {
+                      janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(icaltime_add(dtp.period.start,
+                                                                                                                            dtp.period.duration),
+                                                                                                               prop)));                    
+                    } else {
+                      janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(dtp.period.end, prop)));
+                    }
+                    janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
+
+                  } else if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE-TIME")) {
+
+                    janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(rstart, prop) + duration0));
+                    janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(jip_datetime_with_tzid(rstart, prop)));
+                    janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
+                    
+                  } else if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE")) {
+
+                    icaltimetype lrdate = {
+                      .year = rstart.year,
+                      .month = rstart.month,
+                      .day = rstart.day,
+                      .hour = dtstart.hour,
+                      .minute = dtstart.minute,
+                      .second = dtstart.second,
+                      .zone = dtstart.zone,
+                      .is_date = 0
+                    };
+                    janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(lrdate, prop) + duration0));
+                    janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(jip_datetime_with_tzid(lrdate, prop)));
+                    janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
+                    
                   }
-                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
-
-                } else if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE-TIME")) {
-                  janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(rstart) + duration0));
-                  janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(icaltime_as_timet(rstart)));
-                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
-
-                } else if (0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE")) {
-                  icaltimetype lrdate = {
-                    .year = rstart.year,
-                    .month = rstart.month,
-                    .day = rstart.day,
-                    .hour = dtstart.hour,
-                    .minute = dtstart.minute,
-                    .second = dtstart.second,
-                    .zone = dtstart.zone,
-                    .is_date = 0
-                  };
-                  janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(icaltime_as_timet(lrdate) + duration0));
-                  janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(icaltime_as_timet(lrdate)));
-                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
                   
                 } else {
-                  janet_panicf("Invalid RDATE parameter.\n"); // Just pro forma, this case is caught by the validator.
+                  janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(rstart, prop) + duration0));
+                  janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(jip_datetime_with_tzid(rstart, prop)));
+                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
                 }
 
                 janet_table_put(event, janet_cstringv("rdates"),  janet_wrap_array(rdates));
