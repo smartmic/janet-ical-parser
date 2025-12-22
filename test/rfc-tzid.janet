@@ -53,6 +53,11 @@
                  "dtstamp" 1761357600
                  "dtstart" 1761444000
                  "duration" 82800
-                 "uid" "rfc-tzid-europe-berlin-standard-3@example.com"}]
+                 "uid" "rfc-tzid-europe-berlin-standard-3@example.com"}
+               @{"dtend" 1764126000
+                 "dtstamp" 1761357600
+                 "dtstart" 1764122400
+                 "duration" 3600
+                 "uid" "rfc-tzid-europe-berlin-duration@example.com"}]
     "prodid" "-//ABC Corporation//NONSGML My Product//EN"
     "version" "2.0"})

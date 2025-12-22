@@ -124,7 +124,9 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                             janet_wrap_integer(icaldurationtype_as_int(duration)));
             janet_table_put(event,
                             janet_cstringv("dtend"),
-                            janet_wrap_integer(icaltime_as_timet(icaltime_add(dtstart, duration))));
+                            janet_wrap_integer(janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtstart")))
+                                               +
+                                               icaldurationtype_as_int(duration)));
           }
 
           // Bulk extraction of all other parameters
@@ -187,7 +189,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_cstringv("recurid"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_recurrenceid(prop))));
                 break;
               case ICAL_RRULE_PROPERTY:
-                janet_table_put(event, janet_cstringv("url"), janet_cstringv(icalproperty_as_ical_string(prop)));
+                janet_table_put(event, janet_cstringv("rrule"), janet_cstringv(icalproperty_as_ical_string(prop)));
                 break;
               case ICAL_ATTACH_PROPERTY:
                 // TODO: parameters
