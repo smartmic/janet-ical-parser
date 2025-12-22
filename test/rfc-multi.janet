@@ -1,8 +1,8 @@
-(import ical)
+(import jip)
 (use judge)
 (use ../helpers)
 
-(test (ical/table-from-ics (read-from-file "test/ics-files/rfc-multi.ics"))
+(test (jip/table-from-ics (read-from-file "test/ics-files/rfc-multi.ics"))
   @{"events" @[@{"attachments" @["CID:jsmith.part3.960817T083000.xyzMail@example.com"
                                  "ftp://example.com/pub/ reports/r-960812.ps"]
                  "attendees" @["mailto:joecool@example.com"

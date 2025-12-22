@@ -1,8 +1,8 @@
-(import ical)
+(import jip)
 (use judge)
 (use ../helpers)
 
-(test (ical/table-from-ics (read-from-file "test/ics-files/libical-example.ics"))
+(test (jip/table-from-ics (read-from-file "test/ics-files/libical-example.ics"))
   @{"events" @[@{"attendees" @["MAILTO:employee-A@host.com"]
                  "categories" @["MEETING"]
                  "class" "PUBLIC"

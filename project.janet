@@ -1,5 +1,5 @@
 (declare-project
- :name "ical"
+ :name "janet-ical-parser"
  :description "Convert iCalendar (.ics) to Janet"
  :author "Martin Michel <martin@famic.de>")
 
@@ -17,9 +17,9 @@
               nil))
 
 (declare-native
- :name "ical"
+ :name "jip"
  :headers ["src/jip.h"]
- :source ["src/ical.c"
+ :source ["src/jip.c"
           "src/utils.c"]
  :cflags cflags
  :ldflags ldflags)
