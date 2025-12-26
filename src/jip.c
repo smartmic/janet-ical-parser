@@ -1,4 +1,5 @@
 #include <jip.h>
+#include <stdbool.h>
 
 static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
   janet_fixarity(argc, 1);
@@ -88,6 +89,11 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
           icaltimetype dtstart;
           if (prop != 0) {
             dtstart = icalproperty_get_dtstart(prop);
+            param = icalproperty_get_first_parameter(prop, ICAL_TZID_PARAMETER); // We need TZID for DTSTART for RRULEs
+            if (param != 0) {
+              const char* tzid = icalparameter_get_tzid(param);
+              icaltime_set_timezone(&dtstart, icaltimezone_get_builtin_timezone(tzid));
+            }
             janet_table_put(event,
                             janet_cstringv("dtstart"),
                             janet_wrap_integer(jip_datetime_with_tzid(dtstart, prop)));
@@ -188,8 +194,36 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 // TODO:
                 janet_table_put(event, janet_cstringv("recurid"), janet_wrap_integer(icaltime_as_timet(icalproperty_get_recurrenceid(prop))));
                 break;
-              case ICAL_RRULE_PROPERTY:
-                janet_table_put(event, janet_cstringv("rrule"), janet_cstringv(icalproperty_as_ical_string(prop)));
+              case ICAL_RRULE_PROPERTY: 
+                struct icalrecurrencetype recur  = icalproperty_get_rrule(prop);
+                int start0 = janet_unwrap_integer(janet_table_get(event, janet_cstringv("dtstart")));
+                int duration0 = 0;
+                if (!janet_checktype(janet_table_find(event, janet_cstringv("duration"))->key, JANET_NIL)) {
+                  duration0 = janet_unwrap_integer(janet_table_get(event, janet_cstringv("duration")));
+                } else {
+                  janet_panicf("Failed to fetch event duration.\n");
+                }
+                
+                JanetTable *revent = janet_table(2);
+
+                icalrecur_iterator *ritr;
+                struct icaltimetype next;
+                ritr = icalrecur_iterator_new(recur, dtstart);
+                
+                // Workaround standard/daylight saving time transition within
+                // RRULE: we introduce a fictional TZID parameter for RRULE
+                // property (this is not compliant with RFC 5545) so that we
+                // reuse jip_datetime_with_tzid for local time zone settings
+                icalproperty_set_parameter_from_string(prop, "TZID", icaltimezone_get_display_name(dtstart.zone));
+
+                next = icalrecur_iterator_next(ritr);
+                while (!icaltime_is_null_time(next)) {
+                  janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(next, prop) + duration0));
+                  janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(jip_datetime_with_tzid(next, prop)));
+                  janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
+                  next = icalrecur_iterator_next(ritr);
+                }
+                janet_table_put(event, janet_cstringv("rdates"),  janet_wrap_array(rdates));
                 break;
               case ICAL_ATTACH_PROPERTY:
                 // TODO: parameters
