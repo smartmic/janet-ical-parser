@@ -12,7 +12,8 @@
 (def cflags (case (os/which)
               :windows @["/Ijpm_tree\\include"
                          "/Isrc"]
-              :linux @["-I./src"]
+              :linux @["-Wno-discarded-qualifiers"
+                       "-I./src"]
               #default
               nil))
 

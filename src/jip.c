@@ -2,10 +2,21 @@
 #include <stdbool.h>
 
 static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
-  janet_fixarity(argc, 1);
+  janet_arity(argc, 1, 2);
 
   JanetTable *result = janet_table(3);
 
+  struct icaltimetype until_date = icaltime_null_time();
+  if (argc == 2) {
+    JanetTable *jip_conf = janet_gettable(argv, 1);
+    
+    if (janet_checktype(janet_table_find(jip_conf, janet_cstringv("until-date"))->key, JANET_STRING)) {
+      until_date = icaltime_from_string(janet_unwrap_string(janet_table_get(jip_conf, janet_cstringv("until-date"))));
+    } else {
+      janet_panicf("Invalid \"until-date\" in table \"jip-conf\".");
+    }
+  }
+  
   // we have the whole string in memory
   // improvement: parse components from memory buffer line by line
   icalcomponent *component = icalparser_parse_string(janet_getbuffer(argv, 0)->data);
@@ -203,7 +214,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 } else {
                   janet_panicf("Failed to fetch event duration.\n");
                 }
-                
+
                 JanetTable *revent = janet_table(2);
 
                 icalrecur_iterator *ritr;
@@ -216,8 +227,13 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 // reuse jip_datetime_with_tzid for local time zone settings
                 icalproperty_set_parameter_from_string(prop, "TZID", icaltimezone_get_display_name(dtstart.zone));
 
+                if (icaltime_is_null_time(until_date)) {
+                  struct icaldurationtype look_ahead_duration = icaldurationtype_from_string(LOOK_AHEAD_DURATION);
+                  until_date = icaltime_add(dtstart, look_ahead_duration);
+                }
+                  
                 next = icalrecur_iterator_next(ritr);
-                while (!icaltime_is_null_time(next)) {
+                while (!icaltime_is_null_time(next) && 1 != icaltime_compare(next, until_date)) {
                   janet_table_put(revent, janet_cstringv("end"), janet_wrap_integer(jip_datetime_with_tzid(next, prop) + duration0));
                   janet_table_put(revent, janet_cstringv("start"), janet_wrap_integer(jip_datetime_with_tzid(next, prop)));
                   janet_array_push(rdates, janet_wrap_struct(janet_table_to_struct(revent)));
