@@ -18,8 +18,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
   }
   
   // we have the whole string in memory
-  // improvement: parse components from memory buffer line by line
-  icalcomponent *component = icalparser_parse_string(janet_getbuffer(argv, 0)->data);
+  icalcomponent *component = icalparser_parse_string(janet_getstring(argv, 0));
 
   if(!icalerrno || component != NULL) {
     
@@ -365,7 +364,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
     return janet_wrap_table(result);
 
   } else {
-    janet_panicf("Error while parsing ics data\n");
+    janet_panicf("Error while parsing ics data, libical returning %s\n", icalerror_strerror(icalerrno));
   }
 
   icalcomponent_free(component);
