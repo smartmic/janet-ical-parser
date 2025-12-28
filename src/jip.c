@@ -274,8 +274,23 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 janet_table_put(event, janet_ckeywordv("contacts"),  janet_wrap_array(contacts));
                 break;
               case ICAL_EXDATE_PROPERTY:
-                // TODO: recurrence set
-                janet_array_push(exdates, janet_wrap_integer(jip_datetime_with_tzid(icalproperty_get_exdate(prop), prop)));
+                icaltimetype exdate = icalproperty_get_exdate(prop);
+                param = icalproperty_get_first_parameter(prop, ICAL_VALUE_PARAMETER);
+                if (param != 0 && 0 == strcmp(icalparameter_enum_to_string(icalparameter_get_value(param)), "DATE")) {
+                    icaltimetype mod_exdate = {
+                      .year = exdate.year,
+                      .month = exdate.month,
+                      .day = exdate.day,
+                      .hour = dtstart.hour,
+                      .minute = dtstart.minute,
+                      .second = dtstart.second,
+                      .zone = dtstart.zone,
+                      .is_date = 0
+                    };
+                    janet_array_push(exdates, janet_wrap_integer(jip_datetime_with_tzid(mod_exdate, prop)));
+                } else {
+                  janet_array_push(exdates, janet_wrap_integer(jip_datetime_with_tzid(exdate, prop)));
+                }
                 janet_table_put(event, janet_ckeywordv("exdates"),  janet_wrap_array(exdates));
                 break;
               case ICAL_REQUESTSTATUS_PROPERTY:
