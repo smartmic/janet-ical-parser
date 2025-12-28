@@ -6,14 +6,20 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
 
   JanetTable *result = janet_table(3);
 
+  icalerror_clear_errno(); // needed because icalerrno is set globally and
+                           // persists between function calls
   struct icaltimetype until_date = icaltime_null_time();
   if (argc == 2) {
     JanetTable *jip_conf = janet_gettable(argv, 1);
     
     if (janet_checktype(janet_table_find(jip_conf, janet_ckeywordv("until-date"))->value, JANET_STRING)) {
-      until_date = icaltime_from_string(janet_unwrap_string(janet_table_get(jip_conf, janet_ckeywordv("until-date"))));
+      const char *time_string = janet_unwrap_string(janet_table_get(jip_conf, janet_ckeywordv("until-date")));
+      until_date = icaltime_from_string(time_string);
+      if (icalerrno == ICAL_MALFORMEDDATA_ERROR) {
+        janet_panicf("Invalid \"until-date\" in table \"jip-conf\"; libical says %s.\n", icalerror_strerror(icalerrno));
+      }
     } else {
-      janet_panicf("Invalid \"until-date\" in table \"jip-conf\".");
+      janet_panicf("Invalid Janet type for key \"until-date\" in table \"jip-conf\".\n");
     }
   }
   
@@ -364,7 +370,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
     return janet_wrap_table(result);
 
   } else {
-    janet_panicf("Error while parsing ics data, libical returning %s\n", icalerror_strerror(icalerrno));
+    janet_panicf("Error while parsing ics data; libical says %s\n", icalerror_strerror(icalerrno));
   }
 
   icalcomponent_free(component);
