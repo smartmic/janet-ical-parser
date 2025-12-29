@@ -1,8 +1,7 @@
 (import jip)
 (use judge)
-(use ../helpers)
 
-(test (jip/table-from-ics (read-from-file "test/ics-files/rfc-rrule.ics"))
+(test (jip/table-from-ics-file "test/ics-files/rfc-rrule.ics")
   @{:events @[@{:dtend 873208800
                 :dtstamp 873118800
                 :dtstart 873205200

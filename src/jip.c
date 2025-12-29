@@ -398,7 +398,7 @@ static JanetReg cfuns[] = {
 };
 
 JANET_MODULE_ENTRY(JanetTable *env) {
-  janet_cfuns(env, "jip", cfuns);
+  janet_cfuns(env, "jip/native", cfuns);
 }
 
 

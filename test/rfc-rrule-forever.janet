@@ -1,21 +1,21 @@
 (import jip)
 (use judge)
-(use ../helpers)
+
 
 (def jip-conf @{
                 :until-date 1234})
-(test-error (jip/table-from-ics (read-from-file "test/ics-files/rfc-rrule-forever.ics") jip-conf)
+(test-error (jip/table-from-ics-file "test/ics-files/rfc-rrule-forever.ics" jip-conf)
             "Invalid Janet type for key \"until-date\" in table \"jip-conf\".\n")
 
 (def jip-conf @{
                :until-date "not-a-RFC5545-time"})
-(test-error (jip/table-from-ics (read-from-file "test/ics-files/rfc-rrule-forever.ics") jip-conf)
+(test-error (jip/table-from-ics-file "test/ics-files/rfc-rrule-forever.ics" jip-conf)
   "Invalid \"until-date\" in table \"jip-conf\"; libical says MALFORMEDDATA: An input string was not correctly formed or a component has missing or extra properties.\n")
 
 
 (def jip-conf @{
                 :until-date "19990901T123000"})
-(test (jip/table-from-ics (read-from-file "test/ics-files/rfc-rrule-forever.ics") jip-conf)
+(test (jip/table-from-ics-file "test/ics-files/rfc-rrule-forever.ics" jip-conf)
   @{:events @[@{:dtend 873208800
                 :dtstamp 873118800
                 :dtstart 873205200
@@ -389,7 +389,7 @@
     :prodid "-//ABC Corporation//NONSGML My Product//EN"
     :version "2.0"})
 
-(test (jip/table-from-ics (read-from-file "test/ics-files/rfc-rrule-forever.ics"))
+(test (jip/table-from-ics-file "test/ics-files/rfc-rrule-forever.ics")
   @{:events @[@{:dtend 873208800
                 :dtstamp 873118800
                 :dtstart 873205200

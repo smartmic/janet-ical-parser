@@ -17,8 +17,12 @@
               #default
               nil))
 
+
+(declare-source
+ :source ["jip"])
+
 (declare-native
- :name "jip"
+ :name "jip/native"
  :headers ["src/jip.h"]
  :source ["src/jip.c"
           "src/utils.c"]
