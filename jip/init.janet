@@ -12,6 +12,19 @@
   (native/table-from-ics (helpers/read-from-file ics-file-path) ;jip-conf))
 
 (defn schedule-set
-  "TODO Consolidates base and recurring event dates into one set."
-  [jip-data]
-  jip-data)
+  "Consolidates base and recurring event dates into one set, named `schedule`."
+  [jip-table]
+  (def schedule @{})
+  
+  (loop [event :in (jip-table :events)]
+    (put schedule (event :dtstart) (event :dtend))
+    (loop [rdate :in (event :rdates)]
+      (put schedule (rdate :start) (rdate :end)))
+    (loop [exdate :in (event :exdates)]
+      (put schedule exdate nil))
+    # now clear redundant fields
+    (map |(put event $ nil) [:dtstart :dtend :duration :rdates :exdates])
+    # and replace with the consolidated schedule
+    (put event :schedule schedule))
+
+  jip-table)
