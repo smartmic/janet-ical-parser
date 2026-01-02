@@ -14,14 +14,16 @@
 (defn schedule-set
   "Consolidates base and recurring event dates into one set, named `schedule`."
   [jip-table]
-  (def schedule @{})
   
   (loop [event :in (jip-table :events)]
+    (def schedule @{})
     (put schedule (event :dtstart) (event :dtend))
-    (loop [rdate :in (event :rdates)]
-      (put schedule (rdate :start) (rdate :end)))
-    (loop [exdate :in (event :exdates)]
-      (put schedule exdate nil))
+    (if (not= nil (event :rdates))
+      (loop [rdate :in (event :rdates)]
+      (put schedule (rdate :start) (rdate :end))))
+    (if (not= nil (event :exdates))
+      (loop [exdate :in (event :exdates)]
+      (put schedule exdate nil)))
     # now clear redundant fields
     (map |(put event $ nil) [:dtstart :dtend :duration :rdates :exdates])
     # and replace with the consolidated schedule

@@ -7,6 +7,50 @@
                 :dtstamp 873118800
                 :dtstart 873304200
                 :duration 9000
+                :uid "consolidated-schedule-set-01@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
+                :rdates @[{:end 873313200 :start 873304200}]
+                :uid "consolidated-schedule-set-02@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
+                :rdates @[{:end 873306000 :start 873297000}]
+                :uid "consolidated-schedule-set-03@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
+                :exdates @[873297000]
+                :rdates @[{:end 873306000 :start 873297000}]
+                :uid "consolidated-schedule-set-04@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
+                :exdates @[873304200]
+                :rdates @[{:end 873306000 :start 873297000}]
+                :uid "consolidated-schedule-set-05@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
+                :exdates @[873390600]
+                :rdates @[{:end 873306000 :start 873297000}]
+                :uid "consolidated-schedule-set-05@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
+                :exdates @[873304200]
+                :uid "consolidated-schedule-set-06@example.com"}
+              @{:dtend 873313200
+                :dtstamp 873118800
+                :dtstart 873304200
+                :duration 9000
                 :exdates @[876673800
                            877312800
                            881067600
@@ -56,12 +100,35 @@
                           {:end 883422000 :start 883413000}
                           {:end 883508400 :start 883499400}
                           {:end 883594800 :start 883585800}]
-                :uid "consolidated-schedule-set@example.com"}]
+                :uid "consolidated-schedule-set-20@example.com"}]
     :prodid "-//ABC Corporation//NONSGML My Product//EN"
     :version "2.0"})
 
 (test (jip/schedule-set (jip/table-from-ics-file "test/ics-files/schedule-set.ics"))
   @{:events @[@{:dtstamp 873118800
+                :schedule @{873304200 873313200}
+                :uid "consolidated-schedule-set-01@example.com"}
+              @{:dtstamp 873118800
+                :schedule @{873304200 873313200}
+                :uid "consolidated-schedule-set-02@example.com"}
+              @{:dtstamp 873118800
+                :schedule @{873297000 873306000
+                            873304200 873313200}
+                :uid "consolidated-schedule-set-03@example.com"}
+              @{:dtstamp 873118800
+                :schedule @{873304200 873313200}
+                :uid "consolidated-schedule-set-04@example.com"}
+              @{:dtstamp 873118800
+                :schedule @{873297000 873306000}
+                :uid "consolidated-schedule-set-05@example.com"}
+              @{:dtstamp 873118800
+                :schedule @{873297000 873306000
+                            873304200 873313200}
+                :uid "consolidated-schedule-set-05@example.com"}
+              @{:dtstamp 873118800
+                :schedule @{}
+                :uid "consolidated-schedule-set-06@example.com"}
+              @{:dtstamp 873118800
                 :schedule @{873304200 873313200
                             874240200 874249200
                             875723400 875732400
@@ -92,6 +159,6 @@
                             883326600 883335600
                             883413000 883422000
                             883499400 883508400}
-                :uid "consolidated-schedule-set@example.com"}]
+                :uid "consolidated-schedule-set-20@example.com"}]
     :prodid "-//ABC Corporation//NONSGML My Product//EN"
     :version "2.0"})
