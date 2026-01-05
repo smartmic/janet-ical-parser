@@ -1,5 +1,6 @@
 (import jip/native)
-(import ./helpers)
+(import ./helpers :export true)
+(import ./preprocessors :export true)
 
 (defn table-from-ics-string
   "Convert an iCalendar text snippet to a Janet table"
