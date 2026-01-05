@@ -138,8 +138,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
             }
           } else {
             prop = icalcomponent_get_first_property(c, ICAL_DURATION_PROPERTY);
-            if (prop == 0) janet_panicf("Event %s: Neither DTEND nor DURATION found.\n",
-                                        janet_unwrap_string(janet_table_get(event, janet_ckeywordv("uid"))));
+            if (prop != 0) {
             struct icaldurationtype duration = icalproperty_get_duration(prop);
             janet_table_put(event,
                             janet_ckeywordv("duration"),
@@ -149,6 +148,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                             janet_wrap_integer(janet_unwrap_integer(janet_table_get(event, janet_ckeywordv("dtstart")))
                                                +
                                                icaldurationtype_as_int(duration)));
+            }
           }
 
           // Bulk extraction of all other parameters
@@ -217,7 +217,7 @@ static Janet cfun_table_from_ics(int32_t argc, Janet *argv) {
                 if (!janet_checktype(janet_table_find(event, janet_ckeywordv("duration"))->key, JANET_NIL)) {
                   duration0 = janet_unwrap_integer(janet_table_get(event, janet_ckeywordv("duration")));
                 } else {
-                  janet_panicf("Failed to fetch event duration.\n");
+                  duration0 = 24 * 60 * 60;
                 }
 
                 JanetTable *revent = janet_table(2);
