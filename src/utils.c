@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Martin Michel <martin@famic.de>
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 #include <jip.h>
 
 int jip_datetime_with_tzid(struct icaltimetype dttype, icalproperty *prop) {

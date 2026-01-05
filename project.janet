@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Martin Michel <martin@famic.de>
+#
+# SPDX-License-Identifier: MPL-2.0
+
 (declare-project
  :name "janet-ical-parser"
  :description "Convert iCalendar (.ics) to Janet"

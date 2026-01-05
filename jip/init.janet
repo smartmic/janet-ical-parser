@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Martin Michel <martin@famic.de>
+#
+# SPDX-License-Identifier: MPL-2.0
+
 (import jip/native)
 (import ./helpers :export true)
 (import ./preprocessors :export true)

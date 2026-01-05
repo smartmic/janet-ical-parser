@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2026 Martin Michel <martin@famic.de>
+#
+# SPDX-License-Identifier: MPL-2.0
+
 set -eu   # Exit on errors and undefined variables
  
 ROOT_PATH=$(pwd)
