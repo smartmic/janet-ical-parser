@@ -27,3 +27,11 @@
                  nil)
         (capture 1))))
     text)))
+
+(defn preprocess
+  "Pipeline of preprocessing steps"
+  [text]
+  (->
+   text
+   (replace-missing-description)
+   (remove-method)))
