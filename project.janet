@@ -10,11 +10,23 @@
 (declare-source
  :source ["jip"])
 
-(try
-  (assert (= 0 (os/execute ["pkg-config" "libical" "--max-version=3.0.21"] :p)))
-  ([err fib]
-   (print "Error: missing libical development version, please install lastest 3.0 version (<= 3.0.21)")
-   (os/exit 1)))
+(do
+  (case (os/which)
+    :windows
+     (do
+       (task "install-ext-deps" []
+             (do
+               (copy "libical\\share" "jpm_tree")
+               (copy "libical\\libical.dll" "jpm_tree\\bin"))
+             nil)
+       (add-dep "install" "install-ext-deps"))
+    :linux
+     (try
+       (assert (= 0 (os/execute ["pkg-config" "libical" "--max-version=3.0.21"] :p)))
+       ([err fib]
+        (print "Error: missing libical development version, please install lastest 3.0 version (<= 3.0.21)")
+        (os/exit 1)))))
+
 
 (def ldflags (case (os/which)
               :windows @["ical.lib"]
@@ -26,7 +38,7 @@
 
 (def cflags (case (os/which)
               :windows @[
-                         "/Ijpm_tree\\include"
+                         "/Ilibical\\include"
                          "/Isrc"
                         ]
               :linux @[
@@ -35,10 +47,6 @@
                       ]
               #default
               nil))
-
-
-(declare-source
- :source ["jip"])
 
 (declare-native
  :name "jip/native"
