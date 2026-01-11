@@ -14,17 +14,17 @@
 (defn- nmake-build-install-libical
   []
   (let [cwd (os/cwd)]
+  	(os/mkdir "libical\\build")
+    (os/cd "libical\\build")
     (os/execute ["cmake"
                  "-G" "NMake Makefiles"
-                 "-S" "libical\\"
-                 "-B" "libical\\build\\"
+                 ".."
                  "-DCMAKE_INSTALL_PREFIX=.\\jpm_tree\\"
                  "-DICAL_GLIB=FALSE"
                  "-DUSE_BUILTIN_TZDATA=TRUE"
                  "-DICAL_BUILD_DOCS=FALSE"
                  "-DLIBICAL_BUILD_TESTING=FALSE"
                  "-DWITH_CXX_BINDINGS=FALSE"] :px)
-    (os/cd "libical\\build")
     (os/execute ["nmake"] :px)
     (os/execute ["nmake" "install"] :px)
     (os/cd cwd)))
@@ -58,7 +58,7 @@
       (os/exit 1))))
 
 (def ldflags (case (os/which)
-               :windows @["ical.lib"]
+               :windows @["jpm_tree\\lib\\ical.lib"]
                :linux @["-lical"]
                #default
                @["-lical"]))
