@@ -1,0 +1,15 @@
+{:title "jip API"
+ :template "mdzdoc/main.html"
+ :author "Martin Michel"
+ :topbar true
+ :order 7}
+---
+
+## Index
+
+@api-index[../../../jip/init]
+
+## Reference 
+
+@api-docs[../../../jip/init]
+
