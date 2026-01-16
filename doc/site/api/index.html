@@ -1,69 +1,14 @@
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="../mdzdoc-css/main.css" type="text/css" charset="utf-8">
-    <title>jip API</title>
-    <meta name="description" content="">
-  </head>
-  <body>
-    <!-- Toggles Navigation -->
-    <div id="toc-toggle" class="">
-      <div class="bar topbar"></div>
-      <div class="bar"></div>
-      <div class="bar botbar"></div>
-    </div>
-    <div class="twocol">
-      <div class="toc toc-hidden">
-        <ul>
-          <li class="caret"><span class="selected"><a href="index.html">jip API</a></span><ul></ul></li>
-        </ul>
-      </div>
-      <div class="content-wrapper">
-        <h1>jip API</h1>
-        <div class="prevnext-bar">
-          <span class="prev"><a href="index.html"><span class="prevnext-text">jip API</span></a></span>
-          <span class="next"><a href="index.html"><span class="prevnext-text">jip API</span></a></span>
-        </div>
-        
+<div class='fossil-doc' data-title='API Documentation'>
+  <div class="twocol">
+    <div class="content-wrapper">
+      <h1>jip API</h1>
+      
 
 <h2 id="Index">Index
 </h2>
 <p><a href="#helpers/read-from-file">helpers/read-from-file</a><span class="divider"> </span><a href="#preprocessors/preprocess">preprocessors/preprocess</a><span class="divider"> </span><a href="#preprocessors/remove-method">preprocessors/remove-method</a><span class="divider"> </span><a href="#preprocessors/replace-missing-description">preprocessors/replace-missing-description</a><span class="divider"> </span><a href="#schedule-set">schedule-set</a><span class="divider"> </span><a href="#schedule-set-from-ics-file">schedule-set-from-ics-file</a><span class="divider"> </span><a href="#schedule-set-from-ics-string">schedule-set-from-ics-string</a><span class="divider"> </span><a href="#table-from-ics-file">table-from-ics-file</a><span class="divider"> </span><a href="#table-from-ics-string">table-from-ics-string</a></p><h2 id="Reference">Reference 
 </h2>
 <div class="docstring"><div class="binding-wrap"><span class="binding"><a id="helpers/read-from-file">helpers/read-from-file</a></span><span class="binding-type">function</span><div class="source-map">../jip/helpers.janet at line 5, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">read-from-file</span> <span class="mdzsyn-symbol">file-path</span>)</code></pre><p></p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="preprocessors/preprocess">preprocessors/preprocess</a></span><span class="binding-type">function</span><div class="source-map">../jip/preprocessors.janet at line 31, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">preprocess</span> <span class="mdzsyn-symbol">text</span>)</code></pre><p>Pipeline of preprocessing steps</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="preprocessors/remove-method">preprocessors/remove-method</a></span><span class="binding-type">function</span><div class="source-map">../jip/preprocessors.janet at line 18, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">remove-method</span> <span class="mdzsyn-symbol">text</span>)</code></pre><p>Remove METHOD property from input ics iCalendar</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="preprocessors/replace-missing-description">preprocessors/replace-missing-description</a></span><span class="binding-type">function</span><div class="source-map">../jip/preprocessors.janet at line 5, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">replace-missing-description</span> <span class="mdzsyn-symbol">text</span>)</code></pre><p>Replace emtpy DESCRIPTION or SUMMARY properties with dummy value</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="schedule-set">schedule-set</a></span><span class="binding-type">function</span><div class="source-map">../jip/init.janet at line 19, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">schedule-set</span> <span class="mdzsyn-symbol">jip-table</span>)</code></pre><p>Consolidates base and recurring event dates into one set, named `schedule`.</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="schedule-set-from-ics-file">schedule-set-from-ics-file</a></span><span class="binding-type">function</span><div class="source-map">../jip/init.janet at line 44, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">schedule-set-from-ics-file</span> <span class="mdzsyn-symbol">ics-file-path</span> <span class="mdzsyn-symbol">&amp;</span> <span class="mdzsyn-symbol">jip-conf</span>)</code></pre><p>Convert and consolidate iCalendar text to a Janet schedule table</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="schedule-set-from-ics-string">schedule-set-from-ics-string</a></span><span class="binding-type">function</span><div class="source-map">../jip/init.janet at line 39, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">schedule-set-from-ics-string</span> <span class="mdzsyn-symbol">ics-string</span> <span class="mdzsyn-symbol">&amp;</span> <span class="mdzsyn-symbol">jip-conf</span>)</code></pre><p>Convert and consolidate iCalendar text to a Janet schedule table</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="table-from-ics-file">table-from-ics-file</a></span><span class="binding-type">function</span><div class="source-map">../jip/init.janet at line 14, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">table-from-ics-file</span> <span class="mdzsyn-symbol">ics-file-path</span> <span class="mdzsyn-symbol">&amp;</span> <span class="mdzsyn-symbol">jip-conf</span>)</code></pre><p>Convert an iCalender .ics file to a Janet table</p></div><div class="docstring"><div class="binding-wrap"><span class="binding"><a id="table-from-ics-string">table-from-ics-string</a></span><span class="binding-type">function</span><div class="source-map">../jip/init.janet at line 9, column 1</div></div><pre class="mendoza-codeblock"><code data-language="janet">(<span class="mdzsyn-symbol">table-from-ics-string</span> <span class="mdzsyn-symbol">ics-string</span> <span class="mdzsyn-symbol">&amp;</span> <span class="mdzsyn-symbol">jip-conf</span>)</code></pre><p>Convert an iCalendar text snippet to a Janet table</p></div>
-        <div class="prevnext-bar">
-          <span class="prev"><a href="index.html"><span class="prevnext-text">jip API</span></a></span>
-          <span class="next"><a href="index.html"><span class="prevnext-text">jip API</span></a></span>
-        </div>
-      </div>
     </div>
-    <script charset="utf-8">
-      function toggleToc() {
-        var toggler = document.getElementById('toc-toggle');
-        var wrapper = document.querySelector('.toc');
-        wrapper.classList.toggle('toc-hidden');
-        toggler.classList.toggle('open');
-        window.localStorage.setItem('show-toc', toggler.classList.contains('open'));
-      }
-      function addTocToggle() {
-        var el = document.getElementById('toc-toggle');
-        el.addEventListener('click', toggleToc);
-      }
-      window.addEventListener('DOMContentLoaded', addTocToggle);
-      if (window.localStorage.getItem('show-toc') === 'true') {
-        toggleToc()
-      }
-    </script>
-    <footer>
-      <div class="content-wrapper">
-        Copyright &copy; Martin Michel 2026
-      </div>
-    </footer>
-  </body>
-</html>
+  </div>
+</div>

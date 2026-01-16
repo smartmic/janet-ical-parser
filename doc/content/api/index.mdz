@@ -1,5 +1,5 @@
 {:title "jip API"
- :template "mdzdoc/main.html"
+ :template "main.html"
  :author "Martin Michel"
  :topbar true
  :order 7}
