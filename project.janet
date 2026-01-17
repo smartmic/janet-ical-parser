@@ -19,7 +19,7 @@
     (os/execute ["cmake"
                  "-G" "NMake Makefiles"
                  ".."
-                 "-DCMAKE_INSTALL_PREFIX=.\\jpm_tree\\"
+                 (string "-DCMAKE_INSTALL_PREFIX=" cwd "\\jpm_tree\\")
                  "-DICAL_GLIB=FALSE"
                  "-DUSE_BUILTIN_TZDATA=TRUE"
                  "-DICAL_BUILD_DOCS=FALSE"
